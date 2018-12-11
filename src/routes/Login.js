@@ -1,31 +1,30 @@
 import React, { Component } from 'react';
+import { Form, Container, Header, Input, Button, Message } from 'semantic-ui-react';
 
 import { graphql } from 'react-apollo';
 import gql from "graphql-tag";
-import { Form, Container, Header, Input, Button, Message } from 'semantic-ui-react';
 
-export class Register extends Component {
+export class Login extends Component {
   state = {
-    username: '',
-    usernameError: '',
     email: '',
-    emailError: '',
     password: '',
-    passwordError: '',
+    emailError: '',
+    passwordError: ''
   }
+
   onSubmit = async () => {
     this.setState({
-      usernameError: '',
       emailError: '',
       passwordError: '',
     })
-    const { username, email, password } = this.state;
+    const { email, password } = this.state;
     const responce = await this.props.mutate({
-      variables: { username, email, password }
+      variables: { email, password },
     })
-
-    const { success, errors } = responce.data.register;
+    const { success, token, refreshToken, errors } = responce.data.login;
     if (success) {
+      localStorage.setItem('token', token);
+      localStorage.setItem('refreshToken', refreshToken);
       this.props.history.push('/');
     } else {
       const err = {};
@@ -35,6 +34,7 @@ export class Register extends Component {
       this.setState(err);
     }
   }
+
   handleChange = e => {
     const { name, value } = e.target;
     this.setState({
@@ -42,11 +42,8 @@ export class Register extends Component {
     })
   }
   render() {
-    const { username, email, password, usernameError, emailError, passwordError } = this.state;
+    const { email, password, emailError, passwordError } = this.state;
     const errorList = [];
-    if (usernameError) {
-      errorList.push(usernameError);
-    }
     if (emailError) {
       errorList.push(emailError);
     }
@@ -55,11 +52,8 @@ export class Register extends Component {
     }
     return (
       <Container text>
-        <Header as='h2'>Register</Header>
+        <Header as='h2'>Login</Header>
         <Form>
-          <Form.Field error={!!usernameError}>
-            <Input name="username" onChange={this.handleChange} value={username} placeholder="username" fluid />
-          </Form.Field>
           <Form.Field error={!!emailError}>
             <Input name="email" onChange={this.handleChange} value={email} placeholder="email" fluid />
           </Form.Field>
@@ -80,16 +74,18 @@ export class Register extends Component {
   }
 }
 
-const registerMutation = gql`
-mutation( $username: String!, $email: String!, $password: String!) {
-register(username: $username, email: $email, password: $password)  {
+const loginMutation = gql`
+mutation($email: String!, $password: String!) {
+login(email: $email, password: $password)  {
   success
+  token
+  refreshToken
   errors {
     path
     message
   }
-}
+ }
 }
 `;
 
-export default graphql(registerMutation)(Register);
+export default graphql(loginMutation)(Login);
