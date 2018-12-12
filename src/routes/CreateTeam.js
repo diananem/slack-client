@@ -15,10 +15,10 @@ export class CreateTeam extends Component {
       nameError: '',
     })
     const { name } = this.state;
-    const responce = await this.props.mutate({
+    const response = await this.props.mutate({
       variables: { name },
     })
-    const { success, errors } = responce.data.createTeam;
+    const { success, errors } = response.data.createTeam;
     if (success) {
       this.props.history.push('/');
     } else {

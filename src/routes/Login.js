@@ -18,10 +18,10 @@ export class Login extends Component {
       passwordError: '',
     })
     const { email, password } = this.state;
-    const responce = await this.props.mutate({
+    const response = await this.props.mutate({
       variables: { email, password },
     })
-    const { success, token, refreshToken, errors } = responce.data.login;
+    const { success, token, refreshToken, errors } = response.data.login;
     if (success) {
       localStorage.setItem('token', token);
       localStorage.setItem('refreshToken', refreshToken);

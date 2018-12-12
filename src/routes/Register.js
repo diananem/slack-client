@@ -20,11 +20,11 @@ export class Register extends Component {
       passwordError: '',
     })
     const { username, email, password } = this.state;
-    const responce = await this.props.mutate({
+    const response = await this.props.mutate({
       variables: { username, email, password }
     })
 
-    const { success, errors } = responce.data.register;
+    const { success, errors } = response.data.register;
     if (success) {
       this.props.history.push('/');
     } else {
