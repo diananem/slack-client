@@ -1,95 +1,120 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
+import {
+  Form,
+  Container,
+  Header,
+  Input,
+  Button,
+  Message
+} from "semantic-ui-react";
 
-import { graphql } from 'react-apollo';
+import { Mutation } from "react-apollo";
 import gql from "graphql-tag";
-import { Form, Container, Header, Input, Button, Message } from 'semantic-ui-react';
+
+import { isFieldHasError } from "../utils/validation";
 
 export class Register extends Component {
   state = {
-    username: '',
-    usernameError: '',
-    email: '',
-    emailError: '',
-    password: '',
-    passwordError: '',
-  }
-  onSubmit = async () => {
+    username: "",
+    email: "",
+    password: "",
+    errors: []
+  };
+  onSubmit = registerMutation => async () => {
     this.setState({
-      usernameError: '',
-      emailError: '',
-      passwordError: '',
-    })
+      errors: []
+    });
     const { username, email, password } = this.state;
-    const response = await this.props.mutate({
+    const response = await registerMutation({
       variables: { username, email, password }
-    })
+    });
 
     const { success, errors } = response.data.register;
     if (success) {
-      this.props.history.push('/');
+      this.props.history.push("/");
     } else {
-      const err = {};
-      errors.forEach(({ path, message }) => {
-        err[`${path}Error`] = message;
-      })
-      this.setState(err);
+      this.setState({
+        errors
+      });
     }
-  }
+  };
   handleChange = e => {
     const { name, value } = e.target;
     this.setState({
       [name]: value
-    })
-  }
+    });
+  };
   render() {
-    const { username, email, password, usernameError, emailError, passwordError } = this.state;
-    const errorList = [];
-    if (usernameError) {
-      errorList.push(usernameError);
-    }
-    if (emailError) {
-      errorList.push(emailError);
-    }
-    if (passwordError) {
-      errorList.push(passwordError);
-    }
+    const { username, email, password, errors } = this.state;
+
     return (
       <Container text>
-        <Header as='h2'>Register</Header>
-        <Form>
-          <Form.Field error={!!usernameError}>
-            <Input name="username" onChange={this.handleChange} value={username} placeholder="username" fluid />
-          </Form.Field>
-          <Form.Field error={!!emailError}>
-            <Input name="email" onChange={this.handleChange} value={email} placeholder="email" fluid />
-          </Form.Field>
-          <Form.Field error={!!passwordError}>
-            <Input name="password" onChange={this.handleChange} value={password} type="password" placeholder="password" fluid />
-          </Form.Field>
-          <Button onClick={this.onSubmit}>Submit</Button>
-        </Form>
-        {errorList.length !== 0 &&
+        <Header as="h2">Register</Header>
+        <Mutation mutation={REGISTER_MUTATION}>
+          {(register, { loading }) => {
+            return (
+              <Form loading={loading} onSubmit={this.onSubmit(register)}>
+                <Form.Field
+                  error={isFieldHasError({ errors, fieldName: "username" })}
+                >
+                  <Input
+                    name="username"
+                    onChange={this.handleChange}
+                    value={username}
+                    placeholder="username"
+                    fluid
+                  />
+                </Form.Field>
+                <Form.Field
+                  error={isFieldHasError({ errors, fieldName: "email" })}
+                >
+                  <Input
+                    name="email"
+                    onChange={this.handleChange}
+                    value={email}
+                    placeholder="email"
+                    fluid
+                  />
+                </Form.Field>
+                <Form.Field
+                  error={isFieldHasError({ errors, fieldName: "password" })}
+                >
+                  <Input
+                    name="password"
+                    onChange={this.handleChange}
+                    value={password}
+                    type="password"
+                    placeholder="password"
+                    fluid
+                  />
+                </Form.Field>
+                <Button type="submit">Submit</Button>
+              </Form>
+            );
+          }}
+        </Mutation>
+        {errors.length !== 0 && (
           <Message
             error
             header="There was some errors with your submission"
-            list={errorList}
+            list={errors.map(({ message }) => message)}
           />
-        }
+        )}
       </Container>
-    )
+    );
   }
 }
 
-const registerMutation = gql`
-mutation( $username: String!, $email: String!, $password: String!) {
-register(username: $username, email: $email, password: $password)  {
-  success
-  errors {
-    path
-    message
+const REGISTER_MUTATION = gql`
+  mutation($username: String!, $email: String!, $password: String!) {
+    register(username: $username, email: $email, password: $password) {
+      success
+      errors {
+        path
+        message
+      }
+    }
   }
-}
-}
 `;
 
-export default graphql(registerMutation)(Register);
+export default Register;

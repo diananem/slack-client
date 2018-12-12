@@ -1,80 +1,98 @@
-import React, { Component } from 'react';
-import { Form, Container, Header, Input, Button, Message } from 'semantic-ui-react';
+import React, { Component } from "react";
+import {
+  Form,
+  Container,
+  Header,
+  Input,
+  Button,
+  Message
+} from "semantic-ui-react";
 
-import { graphql } from 'react-apollo';
+import { Mutation } from "react-apollo";
 import gql from "graphql-tag";
+
+import { isFieldHasError } from "../utils/validation";
 
 export class CreateTeam extends Component {
   state = {
-    name: '',
-    nameError: '',
-  }
+    name: "",
+    errors: []
+  };
 
-  onSubmit = async () => {
+  onSubmit = createTeamMutation => async () => {
     this.setState({
-      nameError: '',
-    })
+      errors: []
+    });
     const { name } = this.state;
-    const response = await this.props.mutate({
-      variables: { name },
-    })
+    const response = await createTeamMutation({
+      variables: { name }
+    });
     const { success, errors } = response.data.createTeam;
     if (success) {
-      this.props.history.push('/');
+      this.props.history.push("/");
     } else {
       const err = {};
       errors.forEach(({ path, message }) => {
         err[`${path}Error`] = message;
-      })
+      });
       this.setState(err);
     }
-  }
+  };
 
   handleChange = e => {
     const { name, value } = e.target;
     this.setState({
       [name]: value
-    })
-  }
+    });
+  };
   render() {
-    const { name, nameError } = this.state;
-    const errorList = [];
-    if (nameError) {
-      errorList.push(nameError);
-    }
-
+    const { name, errors } = this.state;
     return (
       <Container text>
-        <Header as='h2'>Create a Team</Header>
-        <Form>
-          <Form.Field error={!!nameError}>
-            <Input name="name" onChange={this.handleChange} value={name} placeholder="name" fluid />
-          </Form.Field>
+        <Header as="h2">Create a Team</Header>
+        <Mutation mutation={CREATE_TEAM_MUTATION}>
+          {(createTeam, { loading }) => {
+            return (
+              <Form loading={loading} onSubmit={this.onSubmit(createTeam)}>
+                <Form.Field
+                  error={isFieldHasError({ errors, fieldName: "name" })}
+                >
+                  <Input
+                    name="name"
+                    onChange={this.handleChange}
+                    value={name}
+                    placeholder="name"
+                    fluid
+                  />
+                </Form.Field>
 
-          <Button onClick={this.onSubmit}>Submit</Button>
-        </Form>
-        {errorList.length !== 0 &&
+                <Button type="submit">Submit</Button>
+              </Form>
+            );
+          }}
+        </Mutation>
+        {errors.length !== 0 && (
           <Message
             error
             header="There was some errors with your submission"
-            list={errorList}
+            list={errors.map(({ message }) => message)}
           />
-        }
+        )}
       </Container>
-    )
+    );
   }
 }
 
-const createTeamMutation = gql`
-mutation($name: String!) {
-createTeam(name: $name)  {
-  success
-  errors {
-    path
-    message
+const CREATE_TEAM_MUTATION = gql`
+  mutation($name: String!) {
+    createTeam(name: $name) {
+      success
+      errors {
+        path
+        message
+      }
+    }
   }
- }
-}
 `;
 
-export default graphql(createTeamMutation)(CreateTeam);
+export default CreateTeam;
