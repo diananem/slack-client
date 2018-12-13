@@ -31,11 +31,9 @@ export class CreateTeam extends Component {
     if (success) {
       this.props.history.push("/");
     } else {
-      const err = {};
-      errors.forEach(({ path, message }) => {
-        err[`${path}Error`] = message;
+      this.setState({
+        errors
       });
-      this.setState(err);
     }
   };
 
