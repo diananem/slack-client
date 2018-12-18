@@ -1,11 +1,22 @@
-import React from 'react';
-import { graphql } from 'react-apollo';
+import React from "react";
 import gql from "graphql-tag";
+import { Query } from "react-apollo";
 
-const Home = ({ data: { getAllUsers = [] } }) =>
-  getAllUsers.map(u => <h1 key={u.id}>{u.email}</h1>);
+const Home = () => (
+  <Query query={GET_ALL_USERS_QUERY}>
+    {({ data: { getAllUsers = [] } }) => {
+      return (
+        <div>
+          {getAllUsers.map(u => (
+            <h1 key={u.id}>{u.email}</h1>
+          ))}
+        </div>
+      );
+    }}
+  </Query>
+);
 
-const getAllUsersQuery = gql`
+const GET_ALL_USERS_QUERY = gql`
   {
     getAllUsers {
       id
@@ -14,4 +25,4 @@ const getAllUsersQuery = gql`
   }
 `;
 
-export default graphql(getAllUsersQuery)(Home);
+export default Home;

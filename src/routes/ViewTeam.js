@@ -1,24 +1,21 @@
 import React from "react";
-import Channels from "../components/Channels";
-import Teams from "../components/Teams";
+
 import Messages from "../components/Messages";
 import Header from "../components/Header";
 import AppLayout from "../components/AppLayout";
-import Input from "../components/Input";
+import SendMessage from "../components/SendMessage";
+import Sidebar from "../containers/Sidebar";
 
 export default () => (
   <AppLayout>
-    <Teams>Teams</Teams>
-    <Channels>Channels</Channels>
-    <Header>Header</Header>
+    <Sidebar currentTeamId={8} />
+    <Header channelName="general" />
     <Messages>
-      <ul class="message-list">
+      <ul className="message-list">
         <li />
         <li />
       </ul>
     </Messages>
-    <Input>
-      <input type="text" placeholder="CSS Grid Layout Module" />
-    </Input>
+    <SendMessage channelName="general" />
   </AppLayout>
 );
