@@ -1,7 +1,7 @@
 import React from "react";
 import gql from "graphql-tag";
 import { Query } from "react-apollo";
-import _ from "lodash";
+import findIndex from "lodash/findIndex";
 import decode from "jwt-decode";
 
 import Channels from "../components/Channels";
@@ -9,16 +9,19 @@ import Teams from "../components/Teams";
 
 const Sidebar = ({ currentTeamId }) => (
   <Query query={ALL_TEAMS_QUERY}>
-    {({ loading, data }) => {
+    {({ loading, error, data }) => {
       if (loading) {
         return "Loading..";
       }
+      if (error) return `Error! ${error.message}`;
 
       const { allTeams } = data;
 
-      const teamIdx = _.findIndex(allTeams, ["id", currentTeamId]);
+      const teamIdx = currentTeamId
+        ? findIndex(allTeams, ["id", parseInt(currentTeamId)])
+        : 0;
+
       const team = allTeams[teamIdx];
-      console.log(allTeams);
       let username = "";
       try {
         const token = localStorage.getItem("token");

@@ -48,7 +48,7 @@ const AppRouter = () => (
       <Route path="/" exact component={Home} />
       <Route path="/register" component={Register} />
       <Route path="/login" component={Login} />
-      <Route path="/view-team" component={ViewTeam} />
+      <Route path="/view-team/:team_id?/:channel_id?" component={ViewTeam} />
       <PrivateRoute path="/create-team" component={CreateTeam} />
     </Switch>
   </Router>

@@ -30,13 +30,14 @@ export class CreateTeam extends Component {
         variables: { name }
       });
     } catch (err) {
+      console.log(err);
       this.props.history.push("/login");
       return;
     }
 
-    const { success, errors } = response.data.createTeam;
+    const { success, errors, team } = response.data.createTeam;
     if (success) {
-      this.props.history.push("/");
+      this.props.history.push(`/view-team/${team.id}`);
     } else {
       this.setState({
         errors
@@ -92,6 +93,9 @@ const CREATE_TEAM_MUTATION = gql`
   mutation($name: String!) {
     createTeam(name: $name) {
       success
+      team {
+        id
+      }
       errors {
         path
         message
