@@ -28,10 +28,9 @@ export class Login extends Component {
     const response = await loginMutation({
       variables: { email, password }
     });
-    const { success, token, refreshToken, errors } = response.data.login;
+    const { success, token, errors } = response.data.login;
     if (success) {
       localStorage.setItem("token", token);
-      localStorage.setItem("refreshToken", refreshToken);
       this.props.history.push("/");
     } else {
       this.setState({
@@ -103,7 +102,6 @@ const LOGIN_MUTATION = gql`
     login(email: $email, password: $password) {
       success
       token
-      refreshToken
       errors {
         path
         message
