@@ -12,13 +12,19 @@ class Sidebar extends Component {
     openInvitePeopleModal: false
   };
 
-  toggleAddChannelModal = () => {
+  toggleAddChannelModal = e => {
+    if (e) {
+      e.preventDefault();
+    }
     this.setState(prevState => ({
       openAddChannelModal: !prevState.openAddChannelModal
     }));
   };
 
-  toggleInvitePeopleModal = () => {
+  toggleInvitePeopleModal = e => {
+    if (e) {
+      e.preventDefault();
+    }
     this.setState(prevState => ({
       openInvitePeopleModal: !prevState.openInvitePeopleModal
     }));

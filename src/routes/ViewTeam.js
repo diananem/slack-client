@@ -1,6 +1,7 @@
 import React from "react";
 import { Query } from "react-apollo";
 import findIndex from "lodash/findIndex";
+import { Redirect } from "react-router-dom";
 
 import Messages from "../components/Messages";
 import Header from "../components/Header";
@@ -19,17 +20,24 @@ const ViewTeam = ({
       if (loading) {
         return "Loading..";
       }
-      if (error) return `Error! ${error.message}`;
-
       const { allTeams } = data;
-      const teamIdx = team_id
-        ? findIndex(allTeams, ["id", parseInt(team_id, 10)])
+      if (!allTeams.length) {
+        return <Redirect to="/create-team" />;
+      }
+
+      const teamIdInteger = parseInt(team_id, 10);
+
+      const teamIdx = teamIdInteger
+        ? findIndex(allTeams, ["id", teamIdInteger])
         : 0;
-      const team = allTeams[teamIdx];
-      const channelIdx = channel_id
-        ? findIndex(team.channels, ["id", parseInt(channel_id, 10)])
+      const team = teamIdx === -1 ? allTeams[0] : allTeams[teamIdx];
+      const channelIdInteger = parseInt(channel_id, 10);
+
+      const channelIdx = channelIdInteger
+        ? findIndex(team.channels, ["id", channelIdInteger])
         : 0;
-      const channel = team.channels[channelIdx];
+      const channel =
+        channelIdx === -1 ? team.channels[0] : team.channels[channelIdx];
       return (
         <AppLayout>
           <Sidebar
