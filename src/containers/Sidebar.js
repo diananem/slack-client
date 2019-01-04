@@ -33,15 +33,18 @@ class Sidebar extends Component {
     const { teams, team } = this.props;
 
     let username = "";
+    let isOwner = false;
     try {
       const token = localStorage.getItem("token");
       const { user } = decode(token);
       username = user.username;
+      isOwner = user.id === team.owner;
     } catch (err) {}
     return [
       <Teams key="teams-sidebar" teams={teams} />,
       <Channels
         key="channels-sidebar"
+        isOwner={isOwner}
         teamId={team.id}
         teamName={team.name}
         userName={username}

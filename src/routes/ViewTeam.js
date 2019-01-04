@@ -20,17 +20,24 @@ const ViewTeam = ({
       if (loading) {
         return "Loading..";
       }
-      const { allTeams } = data;
-      if (!allTeams.length) {
+      if (error) {
+        console.error(error);
+        return;
+      }
+      const { allTeams, inviteTeams } = data;
+
+      const teams = [...allTeams, ...inviteTeams];
+
+      if (!teams.length) {
         return <Redirect to="/create-team" />;
       }
 
       const teamIdInteger = parseInt(team_id, 10);
 
       const teamIdx = teamIdInteger
-        ? findIndex(allTeams, ["id", teamIdInteger])
+        ? findIndex(teams, ["id", teamIdInteger])
         : 0;
-      const team = teamIdx === -1 ? allTeams[0] : allTeams[teamIdx];
+      const team = teamIdx === -1 ? teams[0] : teams[teamIdx];
       const channelIdInteger = parseInt(channel_id, 10);
 
       const channelIdx = channelIdInteger
@@ -41,7 +48,7 @@ const ViewTeam = ({
       return (
         <AppLayout>
           <Sidebar
-            teams={allTeams.map(t => ({
+            teams={teams.map(t => ({
               id: t.id,
               letter: t.name.charAt(0).toUpperCase()
             }))}
