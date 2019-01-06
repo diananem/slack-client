@@ -3,11 +3,11 @@ import { Query } from "react-apollo";
 import findIndex from "lodash/findIndex";
 import { Redirect } from "react-router-dom";
 
-import Messages from "../components/Messages";
 import Header from "../components/Header";
 import AppLayout from "../components/AppLayout";
 import SendMessage from "../components/SendMessage";
 import Sidebar from "../containers/Sidebar";
+import MessageContainer from "../containers/MessageContainer";
 import { ALL_TEAMS_QUERY } from "../queries/ALL_TEAMS_QUERY";
 
 const ViewTeam = ({
@@ -55,13 +55,8 @@ const ViewTeam = ({
             team={team}
           />
           <Header channelName={channel.name} />
-          <Messages channelId={channel.id}>
-            <ul className="message-list">
-              <li />
-              <li />
-            </ul>
-          </Messages>
-          <SendMessage channelName={channel.name} />
+          <MessageContainer channelId={channel.id} />
+          <SendMessage channelName={channel.name} channelId={channel.id} />
         </AppLayout>
       );
     }}
