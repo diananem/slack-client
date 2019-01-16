@@ -16,7 +16,10 @@ import ViewTeam from "./ViewTeam";
 const isAuthenticated = () => {
   const token = localStorage.getItem("token");
   try {
-    decode(token);
+    const decodedToken = decode(token);
+    if (decodedToken.exp < Date.now() / 1000) {
+      return false;
+    }
   } catch (err) {
     return false;
   }
