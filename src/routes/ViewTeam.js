@@ -15,7 +15,7 @@ const ViewTeam = ({
     params: { team_id, channel_id }
   }
 }) => (
-  <Query query={ALL_TEAMS_QUERY}>
+  <Query query={ALL_TEAMS_QUERY} fetchPolicy="network-only">
     {({ loading, error, data }) => {
       if (loading) {
         return "Loading..";

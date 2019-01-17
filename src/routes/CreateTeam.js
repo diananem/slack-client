@@ -24,24 +24,25 @@ export class CreateTeam extends Component {
       errors: []
     });
     const { name } = this.state;
-    let response = null;
     try {
-      response = await createTeamMutation({
+      const {
+        data: {
+          createTeam: { success, errors, team }
+        }
+      } = await createTeamMutation({
         variables: { name }
       });
+      if (success) {
+        this.props.history.push(`/view-team/${team.id}`);
+      } else {
+        this.setState({
+          errors
+        });
+      }
     } catch (err) {
-      console.log(err);
+      console.error(err);
       this.props.history.push("/login");
       return;
-    }
-
-    const { success, errors, team } = response.data.createTeam;
-    if (success) {
-      this.props.history.push(`/view-team/${team.id}`);
-    } else {
-      this.setState({
-        errors
-      });
     }
   };
 

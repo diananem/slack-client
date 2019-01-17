@@ -31,7 +31,7 @@ export class Login extends Component {
     const { success, token, errors } = response.data.login;
     if (success) {
       localStorage.setItem("token", token);
-      this.props.history.push("/");
+      this.props.history.push("/view-team");
     } else {
       this.setState({
         errors
