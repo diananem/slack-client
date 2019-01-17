@@ -6,7 +6,12 @@ import Messages from "../components/Messages";
 
 const MessageContainer = ({ channelId }) => {
   return (
-    <Query query={MESSAGES_QUERY} variables={{ channelId }}>
+    <Query
+      query={MESSAGES_QUERY}
+      variables={{ channelId }}
+      key={channelId}
+      fetchPolicy="network-only"
+    >
       {({ loading, error, data, subscribeToMore }) => {
         if (loading) return null;
         if (error) return `Error!: ${error}`;
@@ -14,6 +19,7 @@ const MessageContainer = ({ channelId }) => {
         return (
           <Messages
             messages={messages}
+            key={channelId}
             subscribeToNewMessages={() =>
               subscribeToMore({
                 document: ON_MESSAGE_ADDED,

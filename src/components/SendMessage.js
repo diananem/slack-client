@@ -28,7 +28,6 @@ const SendMessage = ({ channelName, channelId }) => (
                 setSubmitting(false);
                 return;
               }
-
               await createMessage({
                 variables: {
                   channel_id: Number(channelId),

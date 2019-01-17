@@ -14,8 +14,15 @@ const MessagesList = styled.div`
 
 class Messages extends Component {
   componentDidMount() {
-    this.props.subscribeToNewMessages();
+    this.unsubscribe = this.props.subscribeToNewMessages();
   }
+
+  componentWillUnmount() {
+    if (this.unsubscribe) {
+      this.unsubscribe();
+    }
+  }
+
   render() {
     const { messages } = this.props;
     return (
