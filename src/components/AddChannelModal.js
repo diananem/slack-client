@@ -25,8 +25,11 @@ const AddChannelModal = ({ open, onClose, teamId }) => (
                       return;
                     }
                     const data = store.readQuery({ query: ALL_TEAMS_QUERY });
-                    const teamIdx = findIndex(data.allTeams, ["id", teamId]);
-                    data.allTeams[teamIdx].channels.push(channel);
+                    const teamIdx = findIndex(data.getUser.teams, [
+                      "id",
+                      teamId
+                    ]);
+                    data.getUser.teams[teamIdx].channels.push(channel);
                     store.writeQuery({ query: ALL_TEAMS_QUERY, data });
                   }
                 });

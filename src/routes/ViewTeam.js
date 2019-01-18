@@ -24,10 +24,8 @@ const ViewTeam = ({
         console.error(error);
         return;
       }
-      const { allTeams, inviteTeams } = data;
 
-      const teams = [...allTeams, ...inviteTeams];
-
+      const { teams, username } = data.getUser;
       if (!teams.length) {
         return <Redirect to="/create-team" />;
       }
@@ -53,6 +51,7 @@ const ViewTeam = ({
               letter: t.name.charAt(0).toUpperCase()
             }))}
             team={team}
+            username={username}
           />
           <Header channelName={channel.name} />
           <MessageContainer channelId={channel.id} />

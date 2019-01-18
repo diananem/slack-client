@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import decode from "jwt-decode";
 
 import Channels from "../components/Channels";
 import Teams from "../components/Teams";
@@ -30,21 +29,13 @@ class Sidebar extends Component {
     }));
   };
   render() {
-    const { teams, team } = this.props;
+    const { teams, team, username } = this.props;
 
-    let username = "";
-    let isOwner = false;
-    try {
-      const token = localStorage.getItem("token");
-      const { user } = decode(token);
-      username = user.username;
-      isOwner = user.id === team.owner;
-    } catch (err) {}
     return [
       <Teams key="teams-sidebar" teams={teams} />,
       <Channels
         key="channels-sidebar"
-        isOwner={isOwner}
+        isOwner={team.admin}
         teamId={team.id}
         teamName={team.name}
         userName={username}
