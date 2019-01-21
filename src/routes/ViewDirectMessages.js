@@ -8,12 +8,12 @@ import Header from "../components/Header";
 import AppLayout from "../components/AppLayout";
 import SendMessage from "../components/SendMessage";
 import Sidebar from "../containers/Sidebar";
-import MessageContainer from "../containers/MessageContainer";
+import DirectMessageContainer from "../containers/DirectMessageContainer";
 import { ALL_TEAMS_QUERY } from "../queries/ALL_TEAMS_QUERY";
 
-const ViewTeam = ({
+const ViewDirectMessages = ({
   match: {
-    params: { team_id, channel_id }
+    params: { team_id, user_id }
   }
 }) => (
   <Query query={ALL_TEAMS_QUERY} fetchPolicy="network-only">
@@ -37,21 +37,11 @@ const ViewTeam = ({
         ? findIndex(teams, ["id", teamIdInteger])
         : 0;
       const team = teamIdx === -1 ? teams[0] : teams[teamIdx];
-      const channelIdInteger = parseInt(channel_id, 10);
 
-      const channelIdx = channelIdInteger
-        ? findIndex(team.channels, ["id", channelIdInteger])
-        : 0;
-      const channel =
-        channelIdx === -1 ? team.channels[0] : team.channels[channelIdx];
       return (
-        <Mutation mutation={CREATE_MESSAGE_MUTATION}>
-          {(createMessage, { error }) => {
-            if (error) {
-              console.log(error);
-              return;
-            }
-            return (
+        <Mutation mutation={CREATE_DIRECT_MESSAGE_MUTATION}>
+          {(createDirectMessage, { loading, error }) => (
+            <>
               <AppLayout>
                 <Sidebar
                   teams={teams.map(t => ({
@@ -61,32 +51,40 @@ const ViewTeam = ({
                   team={team}
                   username={username}
                 />
-                <Header channelName={channel.name} />
-                <MessageContainer channelId={channel.id} />
+                <Header channelName={"Some username"} />
+                <DirectMessageContainer teamId={team_id} userId={user_id} />
                 <SendMessage
-                  placeholder={channel.name}
                   onSubmit={async text => {
-                    await createMessage({
+                    const response = await createDirectMessage({
                       variables: {
                         text,
-                        channel_id: channel.id
+                        receiver_id: Number(user_id),
+                        team_id: Number(team_id)
                       }
                     });
+                    console.log(response);
                   }}
+                  placeholder={user_id}
                 />
               </AppLayout>
-            );
-          }}
+              {loading && <p>Loading...</p>}
+              {error && <p>Error :( Please try again</p>}
+            </>
+          )}
         </Mutation>
       );
     }}
   </Query>
 );
 
-const CREATE_MESSAGE_MUTATION = gql`
-  mutation($channel_id: Int!, $text: String!) {
-    createMessage(channel_id: $channel_id, text: $text)
+const CREATE_DIRECT_MESSAGE_MUTATION = gql`
+  mutation($receiver_id: Int!, $text: String!, $team_id: Int!) {
+    createDirectMessage(
+      receiver_id: $receiver_id
+      text: $text
+      team_id: $team_id
+    )
   }
 `;
 
-export default ViewTeam;
+export default ViewDirectMessages;

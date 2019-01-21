@@ -2,7 +2,7 @@ import React from "react";
 import { Query } from "react-apollo";
 import gql from "graphql-tag";
 
-import Messages from "../components/Messages";
+import ChannelMessages from "../components/ChannelMessages";
 
 const MessageContainer = ({ channelId }) => {
   return (
@@ -17,24 +17,26 @@ const MessageContainer = ({ channelId }) => {
         if (error) return `Error!: ${error}`;
         const { messages } = data;
         return (
-          <Messages
-            messages={messages}
-            key={channelId}
-            subscribeToNewMessages={() =>
-              subscribeToMore({
-                document: ON_MESSAGE_ADDED,
-                variables: { channelId },
-                updateQuery: (prev, { subscriptionData }) => {
-                  if (!subscriptionData.data) return prev;
-                  const newFeedItem = subscriptionData.data.messageAdded;
+          <>
+            <ChannelMessages
+              messages={messages}
+              key={channelId}
+              subscribeToNewMessages={() =>
+                subscribeToMore({
+                  document: ON_MESSAGE_ADDED,
+                  variables: { channelId },
+                  updateQuery: (prev, { subscriptionData }) => {
+                    if (!subscriptionData.data) return prev;
+                    const newFeedItem = subscriptionData.data.messageAdded;
 
-                  return Object.assign({}, prev, {
-                    messages: [...prev.messages, newFeedItem]
-                  });
-                }
-              })
-            }
-          />
+                    return Object.assign({}, prev, {
+                      messages: [...prev.messages, newFeedItem]
+                    });
+                  }
+                })
+              }
+            />
+          </>
         );
       }}
     </Query>
