@@ -37,6 +37,7 @@ const ViewTeam = ({
         ? findIndex(teams, ["id", teamIdInteger])
         : 0;
       const team = teamIdx === -1 ? teams[0] : teams[teamIdx];
+      console.log(team.directMessageMembers);
       const channelIdInteger = parseInt(channel_id, 10);
 
       const channelIdx = channelIdInteger

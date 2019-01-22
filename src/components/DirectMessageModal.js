@@ -5,26 +5,17 @@ import { Query } from "react-apollo";
 import gql from "graphql-tag";
 import { withRouter } from "react-router";
 
-// const items = [
-//   { value: "apple" },
-//   { value: "pear" },
-//   { value: "orange" },
-//   { value: "grape" },
-//   { value: "banana" }
-// ];
-
 const DirectMessageModal = ({ history, open, onClose, teamId }) => (
   <Query
     query={GET_TEAM_MEMBERS_QUERY}
     variables={{ teamId }}
     key={teamId}
-    // fetchPolicy="network-only"
+    fetchPolicy="network-only"
   >
     {({ loading, error, data }) => {
       if (error) return `Error!: ${error}`;
       const { getTeamMembers } = data;
 
-      console.log(teamId);
       return (
         <Modal open={open} onClose={onClose}>
           <Modal.Header>Add Channel</Modal.Header>

@@ -5,7 +5,6 @@ import gql from "graphql-tag";
 import DirectMessages from "../components/DirectMessages";
 
 const DirectMessageContainer = ({ teamId, userId }) => {
-  console.log({ teamId, userId });
   return (
     <Query
       query={DIRECT_MESSAGES_QUERY}
@@ -15,12 +14,11 @@ const DirectMessageContainer = ({ teamId, userId }) => {
     >
       {({ loading, error, data, subscribeToMore }) => {
         if (loading) return null;
-        console.log(data);
         if (error) return `Error!: ${error}`;
         const { directMessages } = data;
         return (
           <>
-            <DirectMessages directMessages={directMessages} />
+            <DirectMessages key={teamId} directMessages={directMessages} />
           </>
         );
       }}

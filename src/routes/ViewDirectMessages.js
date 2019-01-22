@@ -16,17 +16,24 @@ const ViewDirectMessages = ({
     params: { team_id, user_id }
   }
 }) => (
-  <Query query={ALL_TEAMS_QUERY} fetchPolicy="network-only">
+  <Query
+    query={DIRECT_MESSAGE_AND_USER_QUERY}
+    key={user_id}
+    variables={{ user_id: Number(user_id) }}
+    fetchPolicy="network-only"
+  >
     {({ loading, error, data }) => {
       if (loading) {
         return "Loading..";
       }
+
       if (error) {
         console.error(error);
         return;
       }
 
       const { teams, username } = data.getUser;
+      const { getDirectMessageUser } = data;
       if (!teams.length) {
         return <Redirect to="/create-team" />;
       }
@@ -51,20 +58,42 @@ const ViewDirectMessages = ({
                   team={team}
                   username={username}
                 />
-                <Header channelName={"Some username"} />
-                <DirectMessageContainer teamId={team_id} userId={user_id} />
+                <Header channelName={getDirectMessageUser.username} />
+                <DirectMessageContainer teamId={team.id} userId={user_id} />
                 <SendMessage
                   onSubmit={async text => {
-                    const response = await createDirectMessage({
+                    await createDirectMessage({
                       variables: {
                         text,
                         receiver_id: Number(user_id),
                         team_id: Number(team_id)
+                      },
+                      update: store => {
+                        const data = store.readQuery({
+                          query: ALL_TEAMS_QUERY
+                        });
+                        const teamIndex = findIndex(data.getUser.teams, [
+                          "id",
+                          team.id
+                        ]);
+                        const teamDirectMessageMembers =
+                          data.getUser.teams[teamIndex].directMessageMembers;
+                        const notAtTheList = teamDirectMessageMembers.every(
+                          member => member.id !== parseInt(user_id, 10)
+                        );
+
+                        if (notAtTheList) {
+                          teamDirectMessageMembers.push({
+                            __typename: "User",
+                            id: user_id,
+                            username: getDirectMessageUser.username
+                          });
+                          store.writeQuery({ query: ALL_TEAMS_QUERY, data });
+                        }
                       }
                     });
-                    console.log(response);
                   }}
-                  placeholder={user_id}
+                  placeholder={getDirectMessageUser.username}
                 />
               </AppLayout>
               {loading && <p>Loading...</p>}
@@ -84,6 +113,32 @@ const CREATE_DIRECT_MESSAGE_MUTATION = gql`
       text: $text
       team_id: $team_id
     )
+  }
+`;
+
+const DIRECT_MESSAGE_AND_USER_QUERY = gql`
+  query($user_id: Int!) {
+    getDirectMessageUser(user_id: $user_id) {
+      id
+      username
+    }
+    getUser {
+      id
+      username
+      teams {
+        id
+        name
+        admin
+        directMessageMembers {
+          id
+          username
+        }
+        channels {
+          id
+          name
+        }
+      }
+    }
   }
 `;
 
