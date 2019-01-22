@@ -63,6 +63,7 @@ export default ({
   channels,
   users,
   addChannel,
+  addDirectMessage,
   invitePeople,
   isOwner
 }) => (
@@ -81,7 +82,9 @@ export default ({
     </div>
     <div>
       <SideBarList>
-        <SideBarListHeader>Direct Messages</SideBarListHeader>
+        <SideBarListHeader>
+          Direct Messages <Icon onClick={addDirectMessage} name="add circle" />
+        </SideBarListHeader>
         {users.map(user)}
       </SideBarList>
     </div>
