@@ -4,6 +4,15 @@ import { Comment } from "semantic-ui-react";
 import Messages from "../components/Messages";
 
 class DirectMessages extends Component {
+  componentDidMount() {
+    this.unsubscribe = this.props.subscribeToNewDirectMessages();
+  }
+
+  componentWillUnmount() {
+    if (this.unsubscribe) {
+      this.unsubscribe();
+    }
+  }
   render() {
     const { directMessages } = this.props;
     console.log(directMessages);

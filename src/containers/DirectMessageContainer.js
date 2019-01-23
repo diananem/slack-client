@@ -18,7 +18,25 @@ const DirectMessageContainer = ({ teamId, userId }) => {
         const { directMessages } = data;
         return (
           <>
-            <DirectMessages key={teamId} directMessages={directMessages} />
+            <DirectMessages
+              key={teamId}
+              directMessages={directMessages}
+              subscribeToNewDirectMessages={() =>
+                subscribeToMore({
+                  document: ON_DIRECT_MESSAGE_ADDED,
+                  variables: { teamId: Number(teamId), userId: Number(userId) },
+                  updateQuery: (prev, { subscriptionData }) => {
+                    if (!subscriptionData.data) return prev;
+                    const newFeedItem =
+                      subscriptionData.data.directMessageAdded;
+
+                    return Object.assign({}, prev, {
+                      directMessages: [...prev.directMessages, newFeedItem]
+                    });
+                  }
+                })
+              }
+            />
           </>
         );
       }}
@@ -29,6 +47,19 @@ const DirectMessageContainer = ({ teamId, userId }) => {
 const DIRECT_MESSAGES_QUERY = gql`
   query($teamId: Int!, $userId: Int!) {
     directMessages(team_id: $teamId, other_user_id: $userId) {
+      id
+      text
+      sender {
+        username
+      }
+      created_at
+    }
+  }
+`;
+
+const ON_DIRECT_MESSAGE_ADDED = gql`
+  subscription($teamId: Int!, $userId: Int!) {
+    directMessageAdded(team_id: $teamId, user_id: $userId) {
       id
       text
       sender {

@@ -41,7 +41,7 @@ const DirectMessageModal = ({ history, open, onClose, teamId }) => (
                       selectedItem
                     }) => (
                       <div>
-                        <label {...getLabelProps()}>Enter a fruit</label>
+                        <label {...getLabelProps()}>Enter a user</label>
                         <Input
                           {...getInputProps({ placeholder: "Search users" })}
                           fluid
